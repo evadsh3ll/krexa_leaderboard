@@ -39,30 +39,25 @@ export default function Countdown() {
   ];
 
   return (
-    <div className="inline-flex flex-col items-center gap-3">
-      <div
-        className="card flex items-stretch divide-x overflow-hidden"
-        style={{ ["--tw-divide-opacity" as string]: "1", borderColor: "var(--border)" }}
-        aria-label="Time until entries close"
-      >
-        {cells.map((c, i) => (
-          <div
-            key={c.k}
-            className="flex min-w-[68px] flex-col items-center px-4 py-3"
-            style={{ borderLeft: i === 0 ? "none" : "1px solid var(--border)" }}
-          >
-            <span className="nums text-2xl font-medium text-text sm:text-3xl">
-              {pad(c.v)}
-            </span>
-            <span className="mt-1 text-[10px] uppercase tracking-widest text-text-mute">
-              {c.k}
-            </span>
-          </div>
-        ))}
-      </div>
-      <span className="text-xs text-text-dim">
-        Entries close June 10 · winners announced June 11
-      </span>
+    <div
+      className="card flex items-stretch overflow-hidden"
+      style={{ borderColor: "var(--border)" }}
+      aria-label="Time until entries close"
+    >
+      {cells.map((c, i) => (
+        <div
+          key={c.k}
+          className="flex min-w-[68px] flex-col items-center px-4 py-3"
+          style={{ borderLeft: i === 0 ? "none" : "1px solid var(--border)" }}
+        >
+          <span className="nums text-2xl font-medium text-text sm:text-3xl">
+            {pad(c.v)}
+          </span>
+          <span className="mt-1 text-[10px] uppercase tracking-widest text-text-mute">
+            {c.k}
+          </span>
+        </div>
+      ))}
     </div>
   );
 }

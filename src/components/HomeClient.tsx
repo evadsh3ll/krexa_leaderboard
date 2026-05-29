@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { motion, MotionConfig, type Variants } from "motion/react";
 import MazeBackground from "./MazeBackground";
+import PacBackground from "./PacBackground";
 import Countdown from "./Countdown";
 import StatStrip from "./StatStrip";
 import Leaderboard from "./Leaderboard";
@@ -20,7 +21,7 @@ const NAV = [
 ] as const;
 
 const POST_TEXT =
-  "I'm in the #KREXABILLCHALLENGE 🟡 my May Claude/OpenAI bill is on the leaderboard. The 3 biggest spend builders win @krexa_xyz credits. Post your bill 👇";
+  "I'm in the #KREXABILLCHALLENGE 🟡 my Claude/OpenAI bill is on the leaderboard. The 3 biggest AI spenders win @krexa_xyz credits. Post your bill 👇";
 const POST_URL =
   "https://twitter.com/intent/tweet?text=" + encodeURIComponent(POST_TEXT);
 
@@ -41,6 +42,7 @@ export default function HomeClient() {
     <MotionConfig reducedMotion="user">
       <div className="arcade-grid" aria-hidden="true" />
       <MazeBackground scaredRef={scaredRef} />
+      <PacBackground />
       <div className="crt" aria-hidden="true" />
       <KonamiPower scaredRef={scaredRef} />
 
@@ -113,7 +115,7 @@ export default function HomeClient() {
             animate="show"
           >
             <motion.span variants={item} className="eyebrow">
-              <Dot /> May season · live on Solana
+              <Dot /> Top 3 winners win $100 Krexa credit
             </motion.span>
 
             <motion.h1
@@ -124,28 +126,16 @@ export default function HomeClient() {
               <br />
               <span className="text-gradient">Eat the leaderboard.</span>
             </motion.h1>
-
-            <motion.p
-              variants={item}
-              className="mt-6 max-w-[52ch] text-pretty text-[17px] leading-relaxed text-text-dim sm:text-lg"
-            >
-              Post your{" "}
-              <span className="font-medium text-text">Claude</span> or{" "}
-              <span className="font-medium text-text">OpenAI</span> bill. The 3
-              biggest spend builders win Krexa credits. First of its kind, anywhere.
-            </motion.p>
           </motion.div>
         </header>
 
         <Leaderboard lb={lb} />
 
-        {/* Countdown + stats */}
-        <div className="mt-16 flex flex-col items-center gap-10">
+        <div className="mt-16 flex justify-center">
           <Countdown />
-          <div className="w-full">
-            <StatStrip data={lb.data} />
-          </div>
         </div>
+
+        <StatStrip data={lb.data} />
 
         <HowToPlay />
 

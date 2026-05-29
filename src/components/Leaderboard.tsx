@@ -45,16 +45,9 @@ export default function Leaderboard({ lb }: { lb: LeaderboardState }) {
   const hasData = !!data && entries.length > 0;
 
   return (
-    <section id="board" className="mt-28 scroll-mt-8">
-      <div className="text-center">
-        <span className="eyebrow">High scores</span>
-        <h2 className="section-title mt-5 text-[clamp(26px,4.5vw,40px)]">
-          The leaderboard
-        </h2>
-      </div>
-
+    <section id="board" className="mt-10 scroll-mt-8">
       {/* status bar */}
-      <div className="mx-auto mt-6 flex max-w-[720px] items-center justify-center gap-3 text-xs text-text-mute">
+      <div className="mx-auto flex max-w-[720px] items-center justify-center gap-3 text-xs text-text-mute">
         <span className="inline-flex items-center gap-1.5">
           <span
             className="inline-block h-1.5 w-1.5 rounded-full"
