@@ -2,9 +2,7 @@
 
 import { useRef } from "react";
 import { motion, MotionConfig, type Variants } from "motion/react";
-import MazeBackground from "./MazeBackground";
 import PacBackground from "./PacBackground";
-import Countdown from "./Countdown";
 import StatStrip from "./StatStrip";
 import Leaderboard from "./Leaderboard";
 import HowToPlay from "./HowToPlay";
@@ -41,7 +39,6 @@ export default function HomeClient() {
   return (
     <MotionConfig reducedMotion="user">
       <div className="arcade-grid" aria-hidden="true" />
-      <MazeBackground scaredRef={scaredRef} />
       <PacBackground />
       <div className="crt" aria-hidden="true" />
       <KonamiPower scaredRef={scaredRef} />
@@ -130,10 +127,6 @@ export default function HomeClient() {
         </header>
 
         <Leaderboard lb={lb} />
-
-        <div className="mt-16 flex justify-center">
-          <Countdown />
-        </div>
 
         <StatStrip data={lb.data} />
 
