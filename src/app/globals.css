@@ -1,26 +1,295 @@
 @import "tailwindcss";
 
+/* ============================================================
+   KREXA — premium arcade theme
+   Pixel font is an accent only. Sans carries the UI.
+   ============================================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* surfaces */
+  --bg: #06060c;
+  --bg-2: #0a0b16;
+  --surface: rgba(255, 255, 255, 0.035);
+  --surface-2: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  /* text */
+  --text: #f4f6fb;
+  --text-dim: #aeb6cc;
+  --text-mute: #8b93ab;
+
+  /* brand — derived from the Krexa logo (electric blue -> cyan) */
+  --gold: #25cdff;        /* primary accent (cyan) */
+  --gold-soft: #7fe1ff;   /* light cyan (gradient top) */
+  --gold-deep: #2f6bff;   /* royal blue (gradient base / shadow) */
+  --indigo: #2f6bff;
+  --indigo-soft: #7f9bff;
+
+  /* ghosts (avatars / accents) */
+  --blinky: #ff5267;
+  --pinky: #ff8fd6;
+  --inky: #45d9ff;
+  --clyde: #ffb454;
+
+  --radius: 16px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-gold: var(--gold);
+  --color-indigo: var(--indigo);
+  --color-text: var(--text);
+  --color-text-dim: var(--text-dim);
+  --color-text-mute: var(--text-mute);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-pixel: var(--font-pixel);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  letter-spacing: -0.01em;
+  background:
+    radial-gradient(900px 600px at 78% -8%, rgba(108, 123, 255, 0.12), transparent 60%),
+    radial-gradient(900px 600px at 12% 4%, rgba(37, 205, 255, 0.08), transparent 55%),
+    linear-gradient(180deg, var(--bg-2) 0%, var(--bg) 60%);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+::selection {
+  background: var(--gold);
+  color: #000;
+}
+
+/* ---------- Type helpers ---------- */
+.font-pixel { font-family: var(--font-pixel), system-ui, monospace; }
+.font-mono { font-family: var(--font-mono), monospace; }
+.nums { font-family: var(--font-mono), monospace; font-variant-numeric: tabular-nums; }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-pixel), monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--gold);
+  padding: 9px 14px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  text-transform: uppercase;
+}
+
+.text-gradient {
+  background: linear-gradient(180deg, #ffffff 0%, var(--gold-soft) 60%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------- Surfaces ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(12px);
+}
+.card-hover {
+  transition: transform 150ms cubic-bezier(0, 0, 0.2, 1),
+    border-color 150ms cubic-bezier(0, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0, 0, 0.2, 1);
+}
+@media (hover: hover) {
+  .card-hover:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-strong);
+    background: var(--surface-2);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ---------- Buttons ---------- */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #04111f;
+  background: linear-gradient(180deg, var(--gold-soft), var(--gold));
+  border: 1px solid var(--gold-deep);
+  border-radius: 12px;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 8px 24px -8px rgba(37, 205, 255, 0.55);
+  transition: transform 120ms cubic-bezier(0, 0, 0.2, 1),
+    box-shadow 150ms cubic-bezier(0, 0, 0.2, 1),
+    filter 120ms ease-out;
+}
+@media (hover: hover) {
+  .btn-primary:hover {
+    filter: brightness(1.05);
+    box-shadow: 0 12px 30px -8px rgba(37, 205, 255, 0.7);
+  }
+}
+.btn-primary:active {
+  transform: scale(0.975);
+}
+.btn-primary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--indigo);
+}
+
+.link-chip {
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 120ms ease-out, background-color 120ms ease-out;
+}
+@media (hover: hover) {
+  .link-chip:hover {
+    color: var(--text);
+    background: var(--surface);
+  }
+}
+.link-chip:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+}
+
+/* ---------- Section eyebrow / titles ---------- */
+.section-title {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+/* ---------- Static arcade backdrop (always visible) ---------- */
+.arcade-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle,
+    rgba(154, 166, 255, 0.16) 1px,
+    transparent 1.6px
+  );
+  background-size: 30px 30px;
+  -webkit-mask-image: radial-gradient(120% 90% at 50% 30%, #000 0%, transparent 72%);
+  mask-image: radial-gradient(120% 90% at 50% 30%, #000 0%, transparent 72%);
+  opacity: 0.6;
+}
+
+/* gradient hairline glow border for feature cards */
+.glow-border {
+  position: relative;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    linear-gradient(140deg, rgba(37, 205, 255, 0.55), rgba(47, 107, 255, 0.4) 45%, rgba(255, 255, 255, 0.04) 75%) border-box;
+}
+
+/* champion (#1) row tint */
+.champion-row {
+  background: linear-gradient(
+    100deg,
+    rgba(37, 205, 255, 0.12),
+    rgba(47, 107, 255, 0.04) 45%,
+    transparent 75%
+  );
+}
+
+/* tier ring around rank badges */
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* gentle float for decorative sprites (motion-safe only) */
+@keyframes float-y {
+  50% { transform: translateY(-10px); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .float-slow { animation: float-y 5s ease-in-out infinite; }
+  .float-mid { animation: float-y 4s ease-in-out infinite; }
+  .float-fast { animation: float-y 3.2s ease-in-out infinite; }
+}
+
+/* ---------- Grain + vignette overlay (subtle) ---------- */
+.crt {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+}
+.crt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 260px rgba(0, 0, 0, 0.75);
+}
+
+/* shimmer for the #1 rank */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer-gold {
+  background: linear-gradient(
+    100deg,
+    var(--gold) 30%,
+    #eafaff 50%,
+    var(--gold) 70%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 3.2s linear infinite;
+}
+
+@keyframes spin-coin {
+  50% { transform: rotateY(180deg) scaleX(0.18); }
+}
+@keyframes blink {
+  50% { opacity: 0.25; }
+}
+@keyframes pac-run {
+  from { left: -48px; }
+  to { left: calc(100% + 8px); }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
