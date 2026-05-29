@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { motion } from "motion/react";
 import {
   formatAmount,
@@ -10,6 +11,7 @@ import {
 import { Ghost } from "./Sprites";
 
 const EASE_OUT = [0, 0, 0.2, 1] as const;
+const PER_PAGE = 10;
 
 // #1 = brand cyan, #2 silver, #3 bronze
 const TIER = ["#25cdff", "#cdd4e6", "#e09a5b"];
@@ -20,6 +22,27 @@ export default function Leaderboard({ lb }: { lb: LeaderboardState }) {
   const { data, loading, refreshing, error, refresh } = lb;
   const entries = data?.entries ?? [];
   const maxAmount = Math.max(1, ...entries.map((e) => e.amount ?? 0));
+
+  const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return entries;
+    return entries.filter(
+      (e) =>
+        (e.name || "").toLowerCase().includes(q) ||
+        (e.handle || "").toLowerCase().includes(q) ||
+        (e.platform || "").toLowerCase().includes(q) ||
+        String(e.rank) === q,
+    );
+  }, [entries, query]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+  const safePage = Math.min(page, totalPages);
+  const start = (safePage - 1) * PER_PAGE;
+  const pageEntries = filtered.slice(start, start + PER_PAGE);
+  const hasData = !!data && entries.length > 0;
 
   return (
     <section id="board" className="mt-28 scroll-mt-8">
@@ -56,7 +79,29 @@ export default function Leaderboard({ lb }: { lb: LeaderboardState }) {
         </button>
       </div>
 
-      <div className="glow-border card mt-6 overflow-hidden p-2 sm:p-3">
+      {/* search */}
+      {hasData && (
+        <div className="mt-6 flex justify-end">
+          <div className="relative w-full sm:max-w-[240px]">
+            <span aria-hidden className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-text-mute">
+              ⌕
+            </span>
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setPage(1);
+              }}
+              placeholder="Search"
+              aria-label="Search the leaderboard"
+              className="w-full rounded-full border border-border bg-[var(--surface)] py-2 pl-9 pr-4 text-sm text-text outline-none transition-colors placeholder:text-text-mute focus:border-[var(--border-strong)]"
+            />
+          </div>
+        </div>
+      )}
+
+      <div className="glow-border card mt-3 overflow-hidden p-2 sm:p-3">
         <div className="grid grid-cols-[40px_1fr_auto] items-center gap-3 px-4 py-3 text-[11px] font-medium uppercase tracking-wider text-text-dim sm:grid-cols-[48px_1fr_170px] sm:px-5">
           <div>Rank</div>
           <div>Player</div>
@@ -70,15 +115,56 @@ export default function Leaderboard({ lb }: { lb: LeaderboardState }) {
           <ErrorState message={error} onRetry={refresh} />
         ) : entries.length === 0 ? (
           <EmptyState />
+        ) : pageEntries.length === 0 ? (
+          <NoMatch query={query} onClear={() => setQuery("")} />
         ) : (
           <div className="flex flex-col">
-            {entries.map((e, i) => (
+            {pageEntries.map((e, i) => (
               <Row key={`${e.handle}-${e.rank}`} entry={e} index={i} maxAmount={maxAmount} />
             ))}
           </div>
         )}
       </div>
+
+      {/* pagination */}
+      {hasData && totalPages > 1 && pageEntries.length > 0 && (
+        <div className="mt-6 flex items-center justify-center gap-4 text-sm">
+          <button
+            type="button"
+            onClick={() => setPage(Math.max(1, safePage - 1))}
+            disabled={safePage <= 1}
+            className="link-chip px-3 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            ← Prev
+          </button>
+          <span className="tabular-nums text-text-dim">
+            Page {safePage} of {totalPages}
+          </span>
+          <button
+            type="button"
+            onClick={() => setPage(Math.min(totalPages, safePage + 1))}
+            disabled={safePage >= totalPages}
+            className="link-chip px-3 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Next →
+          </button>
+        </div>
+      )}
     </section>
+  );
+}
+
+function NoMatch({ query, onClear }: { query: string; onClear: () => void }) {
+  return (
+    <div className="flex flex-col items-center gap-3 px-6 py-14 text-center">
+      <div className="text-3xl">🔍</div>
+      <p className="text-base font-semibold text-text">
+        No one matching “{query.trim()}”
+      </p>
+      <button type="button" onClick={onClear} className="link-chip px-4 py-1.5 text-sm">
+        Clear search
+      </button>
+    </div>
   );
 }
 

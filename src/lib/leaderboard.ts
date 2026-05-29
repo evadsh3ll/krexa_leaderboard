@@ -45,15 +45,37 @@ export function platformMeta(platform: string): PlatformMeta {
   return { label: platform, color: "#25cdff" };
 }
 
-/** Format a bill amount with its currency. null → "—". */
+const CURRENCY_SYMBOL: Record<string, string> = {
+  $: "$",
+  usd: "$",
+  "us$": "$",
+  usd$: "$",
+  "₹": "₹",
+  inr: "₹",
+  rs: "₹",
+  "rs.": "₹",
+  "€": "€",
+  eur: "€",
+  "£": "£",
+  gbp: "£",
+  "¥": "¥",
+  jpy: "¥",
+  cny: "¥",
+};
+
+/** Format a bill amount, always with the currency symbol in front. null → "—". */
 export function formatAmount(amount: number | null, currency: string): string {
   if (amount == null || Number.isNaN(amount)) return "—";
-  const sym = currency || "$";
+  const raw = (currency || "$").trim();
+  const sym =
+    CURRENCY_SYMBOL[raw.toLowerCase()] ||
+    // already a pure symbol (no letters/digits) → keep it; otherwise default to $
+    (/^[^a-z0-9]+$/i.test(raw) ? raw : "$");
   const n = amount.toLocaleString(undefined, {
     minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
     maximumFractionDigits: 2,
   });
-  return /[a-z]/i.test(sym) ? `${n} ${sym}` : `${sym}${n}`;
+  return `${sym}${n}`;
 }
 
 export type LeaderboardState = {
