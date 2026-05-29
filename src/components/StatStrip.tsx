@@ -1,21 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ENTRY_COUNT, TOTAL_POT } from "@/lib/players";
-import { useCountUp } from "@/lib/useCountUp";
+import { formatAmount, type LeaderboardData } from "@/lib/leaderboard";
 
-export default function StatStrip() {
-  // start counters once mounted on the client (no intro gate anymore)
-  const [go, setGo] = useState(false);
-  useEffect(() => setGo(true), []);
-
-  const entries = useCountUp(ENTRY_COUNT, go, 1300);
-  const pot = useCountUp(TOTAL_POT, go, 1600);
+export default function StatStrip({ data }: { data: LeaderboardData | null }) {
+  const entries = data?.entries ?? [];
+  const count = data?.count ?? entries.length;
+  const top = entries.find((e) => e.amount != null);
 
   return (
     <div className="mx-auto mt-12 grid max-w-md grid-cols-2 gap-3">
-      <Stat value={String(entries)} label="Entries so far" />
-      <Stat value={"$" + pot.toLocaleString()} label="Total bills stacked" accent />
+      <Stat value={data ? String(count) : "—"} label="Entries so far" />
+      <Stat
+        value={top ? formatAmount(top.amount, top.currency) : "—"}
+        label="Biggest bill"
+        accent
+      />
     </div>
   );
 }

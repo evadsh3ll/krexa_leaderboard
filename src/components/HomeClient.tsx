@@ -8,8 +8,8 @@ import StatStrip from "./StatStrip";
 import Leaderboard from "./Leaderboard";
 import HowToPlay from "./HowToPlay";
 import KonamiPower from "./KonamiPower";
-import PacManBanner from "./PacManBanner";
 import Waitlist from "./Waitlist";
+import { useLeaderboard } from "@/lib/leaderboard";
 
 const EASE_OUT = [0, 0, 0.2, 1] as const;
 
@@ -35,6 +35,7 @@ const item: Variants = {
 
 export default function HomeClient() {
   const scaredRef = useRef(false);
+  const lb = useLeaderboard();
 
   return (
     <MotionConfig reducedMotion="user">
@@ -103,13 +104,8 @@ export default function HomeClient() {
           />
         </motion.div>
 
-        {/* Pac-Man chase banner — always animates */}
-        <div className="pt-2">
-          <PacManBanner />
-        </div>
-
         {/* Hero */}
-        <header id="top" className="pt-2 pb-8">
+        <header id="top" className="pt-10 pb-10">
           <motion.div
             className="flex flex-col items-center text-center"
             variants={group}
@@ -133,42 +129,38 @@ export default function HomeClient() {
               variants={item}
               className="mt-6 max-w-[52ch] text-pretty text-[17px] leading-relaxed text-text-dim sm:text-lg"
             >
-              Post your May{" "}
+              Post your{" "}
               <span className="font-medium text-text">Claude</span> or{" "}
               <span className="font-medium text-text">OpenAI</span> bill. The 3
               biggest spend builders win Krexa credits. First of its kind, anywhere.
             </motion.p>
-
-            <motion.div
-              variants={item}
-              className="mt-8 flex flex-wrap items-center justify-center gap-3"
-            >
-              <a
-                href={POST_URL}
-                target="_blank"
-                rel="noopener"
-                className="btn-primary px-6 py-3 text-[15px]"
-              >
-                Post your bill on X
-                <span aria-hidden>↗</span>
-              </a>
-              <a href="#board" className="link-chip px-4 py-3 text-sm">
-                See the leaderboard
-              </a>
-            </motion.div>
-
-            <motion.div variants={item} className="mt-9">
-              <Countdown />
-            </motion.div>
-
-            <motion.div variants={item} className="w-full">
-              <StatStrip />
-            </motion.div>
           </motion.div>
         </header>
 
-        <Leaderboard />
+        <Leaderboard lb={lb} />
+
+        {/* Countdown + stats */}
+        <div className="mt-16 flex flex-col items-center gap-10">
+          <Countdown />
+          <div className="w-full">
+            <StatStrip data={lb.data} />
+          </div>
+        </div>
+
         <HowToPlay />
+
+        {/* Post CTA */}
+        <div className="mt-10 flex justify-center">
+          <a
+            href={POST_URL}
+            target="_blank"
+            rel="noopener"
+            className="btn-primary px-6 py-3 text-[15px]"
+          >
+            Post your bill on X
+            <span aria-hidden>↗</span>
+          </a>
+        </div>
 
         {/* Waitlist / footer */}
         <footer id="waitlist" className="mt-28 scroll-mt-8">
@@ -210,13 +202,6 @@ export default function HomeClient() {
                 <XLogo /> @krexa_xyz
               </a>
             </div>
-            <p className="max-w-md text-sm leading-relaxed text-text-dim">
-              Krexa Credit Corp — your AI spend, your credit line. Built for the
-              #KREXABILLCHALLENGE. Not financial advice.
-            </p>
-            <p className="font-mono text-xs text-text-mute">
-              ↑ ↑ ↓ ↓ ← → ← → B A
-            </p>
           </div>
         </footer>
       </main>

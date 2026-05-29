@@ -31,7 +31,7 @@ export default function HowToPlay() {
       <div className="text-center">
         <span className="eyebrow">How it works</span>
         <h2 className="section-title mt-5 text-[clamp(26px,4.5vw,40px)]">
-          Three steps to the board
+          Two steps to the board
         </h2>
       </div>
 
