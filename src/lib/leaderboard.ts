@@ -78,6 +78,48 @@ export function formatAmount(amount: number | null, currency: string): string {
   return `${sym}${n}`;
 }
 
+// --- per-entry cleanup ----------------------------------------------------
+// Handles to hide from the board (case-insensitive, no leading @).
+const BLOCK_HANDLES = new Set(["avj1109", "archiehashani"]);
+// Approx INR/USD rate used to correct entries we know were posted in rupees.
+const INR_PER_USD = 83.5;
+// Per-handle data fixes (applied before block/dedupe/re-rank).
+const HANDLE_FIXES: Record<string, (e: Entry) => Entry> = {
+  // shydev69 posted a ~1.38 lakh INR bill; the API stored it as $. Convert.
+  shydev69: (e) => ({
+    ...e,
+    amount:
+      e.amount != null ? Math.round((e.amount / INR_PER_USD) * 100) / 100 : null,
+    currency: "$",
+  }),
+};
+
+function normalize(data: LeaderboardData): LeaderboardData {
+  // 1) per-handle fixes
+  let arr = data.entries.map((e) => {
+    const fix = HANDLE_FIXES[(e.handle || "").toLowerCase()];
+    return fix ? fix(e) : e;
+  });
+  // 2) hide blocked handles
+  arr = arr.filter((e) => !BLOCK_HANDLES.has((e.handle || "").toLowerCase()));
+  // 3) dedupe by handle, keeping the highest-amount entry
+  const byHandle = new Map<string, Entry>();
+  for (const e of arr) {
+    const k = (e.handle || "").toLowerCase();
+    if (!k) continue;
+    const cur = byHandle.get(k);
+    if (!cur || (e.amount ?? -Infinity) > (cur.amount ?? -Infinity)) {
+      byHandle.set(k, e);
+    }
+  }
+  // 4) sort by amount desc (nulls last) and re-rank
+  const sorted = [...byHandle.values()].sort(
+    (a, b) => (b.amount ?? -Infinity) - (a.amount ?? -Infinity),
+  );
+  const reRanked = sorted.map((e, i) => ({ ...e, rank: i + 1 }));
+  return { ...data, count: reRanked.length, entries: reRanked };
+}
+
 export type LeaderboardState = {
   data: LeaderboardData | null;
   loading: boolean;
@@ -105,7 +147,7 @@ export function useLeaderboard(pollMs = 30_000): LeaderboardState {
       ) {
         throw new Error("Unexpected response shape");
       }
-      setData(json as LeaderboardData);
+      setData(normalize(json as LeaderboardData));
       setError(null);
     } catch (e) {
       if ((e as Error).name === "AbortError") return;
